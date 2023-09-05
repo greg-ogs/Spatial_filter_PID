@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import keyboard
 import time
 import numpy as np
-
 import mysql.connector
 
 from skimage.segmentation import slic
