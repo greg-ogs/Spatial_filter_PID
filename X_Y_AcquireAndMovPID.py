@@ -18,7 +18,6 @@ from skimage import io
 
 global continue_recording
 continue_recording = True
-
     
 mydb = mysql.connector.connect(
   host="localhost",
