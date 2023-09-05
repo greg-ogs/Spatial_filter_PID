@@ -11,7 +11,6 @@ import keyboard
 import time
 import numpy as np
 import mysql.connector
-
 from skimage.segmentation import slic
 from skimage.segmentation import mark_boundaries
 from skimage.util import img_as_float
