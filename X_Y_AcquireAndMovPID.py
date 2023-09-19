@@ -20,10 +20,10 @@ global continue_recording
 continue_recording = True
     
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="PASSWD",
-  database = "AIRY"
+    host="localhost",
+    user="Greg",
+    password="contpass01",
+    database="AIRY"
 )
 
 mycursor = mydb.cursor()
@@ -301,12 +301,12 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     if Xerror < 35 and Xerror > -35:
                         XS = 1
                         sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-                        values = (0, 1)
+                        values = (0, 0)
                         mycursor.execute(sql, values)
                         mydb.commit()
                     else:
                         sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-                        values = (Xdist, 1)
+                        values = (Xdist, 0)
                         mycursor.execute(sql, values)
                         mydb.commit()
                         
@@ -334,19 +334,19 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     if Yerror < 45 and Yerror > -45:
                         YS = 1
                         sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-                        values = (0, 1)
+                        values = (0, 0)
                         mycursor.execute(sql, values)
                         mydb.commit()
                     else:
                         sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-                        values = (Ydist, 1)
+                        values = (Ydist, 0)
                         mycursor.execute(sql, values)
                         mydb.commit()
                                        
                     if XS == 1 and YS == 1:
                         continue_recording=False
                         sql = "UPDATE DATA SET X = %s, Y = %s WHERE ID = %s"
-                        values = (0, 0, 1)
+                        values = (0, 0, 0)
                         mycursor.execute(sql, values)
                         mydb.commit()
 
