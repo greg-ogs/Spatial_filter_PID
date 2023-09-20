@@ -18,7 +18,7 @@ def database():
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("SELECT * FROM DATA WHERE ID = 0")
+    mycursor.execute("SELECT * FROM DATA WHERE ID = 1")
     myresult = mycursor.fetchall()
 
     list_one = myresult[0]
