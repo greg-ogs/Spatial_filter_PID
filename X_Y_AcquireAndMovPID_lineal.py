@@ -500,3 +500,28 @@ def main():
     #input('Done! Press Enter to exit...')
     #return only bool # return result
 
+def database():
+    m = []
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="Greg",
+        password="contpass01",
+        database="AIRY"
+    )
+
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * FROM coord")
+    myresult = mycursor.fetchall()
+
+    res_len = len(myresult)
+
+    for i in range(res_len):
+        list_one = myresult[i]
+        x = list_one[1]
+        y = list_one[2]
+        value = list_one[3]
+        ml = [x, y, value]
+        m.append(ml)
+    return m
+
