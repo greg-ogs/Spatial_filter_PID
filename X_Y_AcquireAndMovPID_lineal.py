@@ -525,3 +525,4 @@ def database():
         m.append(ml)
     return m
 
+main()
