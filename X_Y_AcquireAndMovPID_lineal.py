@@ -565,5 +565,5 @@ for i in np.arange(0, 25, 0.001):
             mydb.commit()
             aux = 1
             break
-
-# main()
+time.sleep(30)
+main()
