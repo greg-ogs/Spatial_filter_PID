@@ -531,61 +531,9 @@ def pull_coor():
 def linear_svc_model(x, y):
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
-    new_model = LinearSVC(max_iter=100000000, C=10000, dual=True)
+    new_model = LinearSVC(max_iter=100000000, C=100000, dual=True)
     new_model.fit(x_scaled, y)
     return new_model
-
-
-def first_tray():
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="Greg",
-        password="contpass01",
-        database="AIRY"
-    )
-
-    mycursor = mydb.cursor()
-
-    print('-----------------------------------------------')
-    print('Ingrese las ultimas cordenadas correctas')
-    start = time.time()
-
-    x = input('x')
-    x = float(x)
-    y = input('y')
-    y = float(y)
-    i = 0
-    j = 0
-    x_list = []
-    y_list = []
-    value_list = []
-    batch_size = 10000
-    for i in np.arange(0, 25, 0.001):
-        for j in np.arange(0, 25, 0.001):
-            if i != x or j != y:
-                x_list.append(i)
-                y_list.append(j)
-                value_list.append(0)
-            if i == x and j == y:
-                print(str(i) + ', ' + str(j))
-                for k in range(625000000):
-                    x_list.append(i)
-                    y_list.append(j)
-                    value_list.append(1)
-
-    batches = []
-    for i in range(0, len(x_list), batch_size):
-        batches.append((x_list[i:i + batch_size], y_list[i:i + batch_size], value_list[i:i + batch_size]))
-    for batch in batches:
-        sql = "INSERT INTO coord (x, y, value) VALUES (%s, %s, %s)"
-        mycursor.executemany(sql, batch)
-        mydb.commit()
-    mycursor.close()
-    mydb.close()
-    end = time.time()
-    elapsed = end-start
-    print(elapsed)
-
 
 # first_tray()
 x, y = pull_coor()
@@ -598,15 +546,17 @@ for i in np.arange(0, 25, 0.001):
     if aux == 1:
         break
     for j in np.arange(0, 25, 0.001):
-        x_test = [[i, j], [-15, -15]]
+        x_test = [[i, j], [i, j]]
         result = model.predict(x_test)
 
         if result[0] == 1:
-            print(result)
+            # print(result)
             x = x_test[0][0]
             y = x_test[0][1]
+            # print(x)
+            # print(y)
             sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-            values = (x, 0)
+            values = (y, 0)
             mycursor.execute(sql, values)
             mydb.commit()
             sql = "UPDATE DATA SET X = %s WHERE ID = %s"
@@ -614,5 +564,6 @@ for i in np.arange(0, 25, 0.001):
             mycursor.execute(sql, values)
             mydb.commit()
             aux = 1
+            break
 
 # main()
