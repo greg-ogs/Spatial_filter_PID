@@ -535,35 +535,37 @@ def linear_svc_model(x, y):
     new_model.fit(x_scaled, y)
     return new_model
 
-# first_tray()
-x, y = pull_coor()
-model = linear_svc_model(x, y)
 
+def start():
+    x, y = pull_coor()
+    model = linear_svc_model(x, y)
 
-aux = 0
+    aux = 0
 
-for i in np.arange(0, 25, 0.001):
-    if aux == 1:
-        break
-    for j in np.arange(0, 25, 0.001):
-        x_test = [[i, j], [i, j]]
-        result = model.predict(x_test)
-
-        if result[0] == 1:
-            # print(result)
-            x = x_test[0][0]
-            y = x_test[0][1]
-            # print(x)
-            # print(y)
-            sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-            values = (y, 0)
-            mycursor.execute(sql, values)
-            mydb.commit()
-            sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-            values = (x, 0)
-            mycursor.execute(sql, values)
-            mydb.commit()
-            aux = 1
+    for i in np.arange(0, 25, 0.001):
+        if aux == 1:
             break
-time.sleep(30)
+        for j in np.arange(0, 25, 0.001):
+            x_test = [[i, j], [i, j]]
+            result = model.predict(x_test)
+
+            if result[0] == 1:
+                # print(result)
+                x = x_test[0][0]
+                y = x_test[0][1]
+                # print(x)
+                # print(y)
+                sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
+                values = (y, 0)
+                mycursor.execute(sql, values)
+                mydb.commit()
+                sql = "UPDATE DATA SET X = %s WHERE ID = %s"
+                values = (x, 0)
+                mycursor.execute(sql, values)
+                mydb.commit()
+                aux = 1
+                break
+    time.sleep(30)
+
+start()
 main()
