@@ -13,7 +13,7 @@ def database():
         host="localhost",
         user="Greg",
         password="contpass01",
-        database="airi"
+        database="AIRY"
     )
 
     mycursor = mydb.cursor()
