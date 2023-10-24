@@ -18,6 +18,7 @@ from skimage import io
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
+
 global continue_recording
 continue_recording = True
 
@@ -524,15 +525,16 @@ def pull_coor():
         ml = [x, y]
         x_in.append(ml)
         y_out.append(value)
-
+    print("Data ready")
     return x_in, y_out
 
 
 def linear_svc_model(x, y):
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
-    new_model = LinearSVC(max_iter=100000000, C=100000, dual=True)
+    new_model = LinearSVC( max_iter=10000, dual=True, verbose=1)
     new_model.fit(x_scaled, y)
+    print("model ready")
     return new_model
 
 
@@ -542,15 +544,15 @@ def start():
 
     aux = 0
 
-    for i in np.arange(0, 25, 0.001):
+    for i in np.arange(0, 25, 0.1):
         if aux == 1:
             break
-        for j in np.arange(0, 25, 0.001):
-            x_test = [[i, j], [i, j]]
+        for j in np.arange(0, 25, 0.1):
+            x_test = [[i, j], [5, 5]]
             result = model.predict(x_test)
 
             if result[0] == 1:
-                # print(result)
+                print(result)
                 x = x_test[0][0]
                 y = x_test[0][1]
                 # print(x)
@@ -565,7 +567,9 @@ def start():
                 mydb.commit()
                 aux = 1
                 break
+    print("END")
     time.sleep(30)
 
-start()
+
+# start()
 main()
