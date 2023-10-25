@@ -18,7 +18,6 @@ from skimage import io
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
-
 global continue_recording
 continue_recording = True
 
@@ -206,7 +205,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     image = np.dstack((C, B))
 
                     # for numSegments in (100, 200, 300):
-                    numSegments = 600
+                    numSegments = 300
                     # apply SLIC and extract (approximately) the supplied number
                     # of segments
                     segments = slic(image, n_segments=numSegments, sigma=5)
@@ -303,13 +302,13 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     # Upgrade values mariadb
                     if Xerror < 35 and Xerror > -35:
                         XS = 1
-                        sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-                        values = (0, 0)
+                        sql = "UPDATE data SET X = %s WHERE ID = %s"
+                        values = (0, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
                     else:
-                        sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-                        values = (Xdist, 0)
+                        sql = "UPDATE data SET X = %s WHERE ID = %s"
+                        values = (-Xdist, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
 
@@ -336,20 +335,20 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     # Upgrade values mariadb
                     if Yerror < 45 and Yerror > -45:
                         YS = 1
-                        sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-                        values = (0, 0)
+                        sql = "UPDATE data SET Y = %s WHERE ID = %s"
+                        values = (0, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
                     else:
-                        sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-                        values = (Ydist, 0)
+                        sql = "UPDATE data SET Y = %s WHERE ID = %s"
+                        values = (-Ydist, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
 
                     if XS == 1 and YS == 1:
                         continue_recording = False
-                        sql = "UPDATE DATA SET X = %s, Y = %s WHERE ID = %s"
-                        values = (0, 0, 0)
+                        sql = "UPDATE data SET X = %s, Y = %s WHERE ID = %s"
+                        values = (0, 0, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
 
@@ -530,10 +529,10 @@ def pull_coor():
 
 
 def linear_svc_model(x, y):
-    scaler = StandardScaler()
-    x_scaled = scaler.fit_transform(x)
-    new_model = LinearSVC( max_iter=10000, dual=True, verbose=1)
-    new_model.fit(x_scaled, y)
+    # scaler = StandardScaler()
+    # x_scaled = scaler.fit_transform(x)
+    new_model = LinearSVC(verbose=1)
+    new_model.fit(x, y)
     print("model ready")
     return new_model
 
@@ -544,10 +543,10 @@ def start():
 
     aux = 0
 
-    for i in np.arange(0, 25, 0.1):
+    for i in np.arange(0, 25, 0.001):
         if aux == 1:
             break
-        for j in np.arange(0, 25, 0.1):
+        for j in np.arange(0, 25, 0.001):
             x_test = [[i, j], [5, 5]]
             result = model.predict(x_test)
 
@@ -558,18 +557,18 @@ def start():
                 # print(x)
                 # print(y)
                 sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-                values = (y, 0)
+                values = (y, 1)
                 mycursor.execute(sql, values)
                 mydb.commit()
                 sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-                values = (x, 0)
+                values = (x, 1)
                 mycursor.execute(sql, values)
                 mydb.commit()
                 aux = 1
                 break
     print("END")
-    time.sleep(30)
 
 
 # start()
+# time.sleep(60)
 main()
