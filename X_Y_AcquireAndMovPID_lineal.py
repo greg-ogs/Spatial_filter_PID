@@ -531,7 +531,7 @@ def pull_coor():
 def linear_svc_model(x, y):
     # scaler = StandardScaler()
     # x_scaled = scaler.fit_transform(x)
-    new_model = LinearSVC(verbose=1)
+    new_model = LinearSVC(max_iter=900000000, C=9000000, verbose=1)
     new_model.fit(x, y)
     print("model ready")
     return new_model
@@ -569,6 +569,6 @@ def start():
     print("END")
 
 
-# start()
+start()
 # time.sleep(60)
-main()
+# main()
