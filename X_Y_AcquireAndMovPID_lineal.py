@@ -17,6 +17,7 @@ from skimage.util import img_as_float
 from skimage import io
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
+import tensorflow as tf
 
 global continue_recording
 continue_recording = True
@@ -573,8 +574,8 @@ def start():
 def neural_pred(data):
     x_in = data[:,:2]
     y_out = data[:,2]
-    
-    
+
+
 start()
 # time.sleep(60)
 # main()
