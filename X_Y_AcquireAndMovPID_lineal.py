@@ -575,6 +575,23 @@ def neural_pred(data):
     x_in = data[:,:2]
     y_out = data[:,2]
 
+    model = tf.keras.Sequential([
+        tf.keras.layers.Input(shape=(2,)),        # Capa de entrada con 2 características (x, y)
+        tf.keras.layers.Dense(64, activation='relu'),  # Capa oculta con 64 neuronas y función de activación ReLU
+        tf.keras.layers.Dense(1, activation='sigmoid')  # Capa de salida con 1 neurona y función de activación sigmoid
+    ])
+
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(x_in, y_out, epochs=100)
+
+    ew_data = np.array([[7.0, 8.0],  # [x, y]
+                        [8.0, 9.0]])  # [x, y]
+
+    predictions = model.predict(new_data)
+
+    # Imprime las predicciones
+    for i, pred in enumerate(predictions):
+        print(f'Datos de entrada: {new_data[i]}, Predicción: {pred[0]} (TRUE si > 0.5, FALSE si <= 0.5)')
 
 start()
 # time.sleep(60)
