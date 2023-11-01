@@ -542,7 +542,7 @@ def start():
         for j in np.arange(0, 25, 0.1):
             result = neural_predictions(i, j, model)
             if result[0] > 0.98:
-                print(result[0]*100)
+                print(result[0] * 100)
                 # x = x_test[0][0]
                 # y = x_test[0][1]
                 # sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
@@ -556,6 +556,7 @@ def start():
                 aux = 1
                 break
     print("END")
+
 
 def neural_train(data):
     x_in = data[:, :2]
