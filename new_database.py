@@ -66,20 +66,21 @@ def per_number(x, y):
         database="AIRY"
     )
     cursor = connection.cursor()
-    for i in range(100):
-        x_non = random.uniform(0, 25)
-        x_non = round(x_non, 3)
-        y_non = random.uniform(0, 25)
-        y_non = round(y_non, 3)
-        while x_non == x or y_non == y:
+    for i in range(10000):
+        for j in range(2):
             x_non = random.uniform(0, 25)
             x_non = round(x_non, 3)
             y_non = random.uniform(0, 25)
             y_non = round(y_non, 3)
-        query = "INSERT INTO COORD (X, Y, TYPE) VALUES (%s, %s, %s)"
-        values = (x_non, y_non, 0)
-        cursor.execute(query, values)
-        connection.commit()
+            while x_non == x or y_non == y:
+                x_non = random.uniform(0, 25)
+                x_non = round(x_non, 3)
+                y_non = random.uniform(0, 25)
+                y_non = round(y_non, 3)
+            query = "INSERT INTO COORD (X, Y, TYPE) VALUES (%s, %s, %s)"
+            values = (x_non, y_non, 0)
+            cursor.execute(query, values)
+            connection.commit()
         query = "INSERT INTO COORD (X, Y, TYPE) VALUES (%s, %s, %s)"
         values = (x, y, 1)
         cursor.execute(query, values)
@@ -89,4 +90,4 @@ def per_number(x, y):
 
 # change(1.2, 10.6)
 # pull()
-per_number(5.26, 23.22)
+per_number(10.27, 0.28)
