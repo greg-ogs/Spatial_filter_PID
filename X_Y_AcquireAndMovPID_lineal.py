@@ -500,8 +500,9 @@ def main():
 
 
 def pull_coor():
-    x_in = []
-    y_out = []
+    # x_in = []
+    # y_out = []
+    data = np.zeros((3))
     mydb = mysql.connector.connect(
         host="localhost",
         user="Greg",
@@ -521,11 +522,12 @@ def pull_coor():
         x = list_one[1]
         y = list_one[2]
         value = list_one[3]
-        ml = [x, y]
-        x_in.append(ml)
-        y_out.append(value)
+        ml = [x, y, value]
+        new_line = np.array(ml)
+        data = np.vstack((data, new_line))
+        # y_out.append(value)
     print("Data ready")
-    return x_in, y_out
+    return data
 
 
 def linear_svc_model(x, y):
@@ -568,7 +570,11 @@ def start():
                 break
     print("END")
 
-
+def neural_pred(data):
+    x_in = data[:,:2]
+    y_out = data[:,2]
+    
+    
 start()
 # time.sleep(60)
 # main()
