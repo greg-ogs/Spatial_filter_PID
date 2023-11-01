@@ -532,17 +532,18 @@ def pull_coor():
 
 def start():
     data = pull_coor()
-    neural_pred(data)
+    neural_train(data)
     aux = 0
+    model = tf.keras.models.load_model('my_model.keras')
 
-    for i in np.arange(0, 25, 0.001):
+    for i in np.arange(0, 25, 0.1):
         if aux == 1:
             break
-        for j in np.arange(0, 25, 0.001):
-            result = 0
+        for j in np.arange(0, 25, 0.1):
+            result = neural_predictions(i, j, model)
 
-            if result[0] == 1:
-                print(result)
+            if result[0] > 0.98:
+                print(result[0]*100)
                 # x = x_test[0][0]
                 # y = x_test[0][1]
                 # sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
@@ -553,12 +554,12 @@ def start():
                 # values = (x, 1)
                 # mycursor.execute(sql, values)
                 # mydb.commit()
-                # aux = 1
+                aux = 1
                 break
     print("END")
 
 
-def neural_pred(data):
+def neural_train(data):
     x_in = data[:, :2]
     y_out = data[:, 2]
 
@@ -570,16 +571,16 @@ def neural_pred(data):
 
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model.fit(x_in, y_out, epochs=100)
+    model.save('my_model.keras')
 
-    new_data = np.array([[56.26, 23.22],  # [x, y]
-                         [5.26, 23.22]])  # [x, y]
 
+def neural_predictions(i, j, model):
+    new_data = np.array([[i, j],  # [x, y]
+                         [0, 0]])  # [x, y]
     predictions = model.predict(new_data)
-
     # Imprime las predicciones
-    for i, pred in enumerate(predictions):
-        print(f'Datos de entrada: {new_data[i]}, Predicción: {pred[0]} (TRUE si > 0.5, FALSE si <= 0.5)')
-
+    # for i, pred in enumerate(predictions):
+    #    print(f'Datos de entrada: {new_data[i]}, Predicción: {pred[0]} (TRUE si > 0.5, FALSE si <= 0.5)')
     return predictions
 
 
