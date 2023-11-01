@@ -532,41 +532,38 @@ def pull_coor():
 
 def start():
     data = pull_coor()
-
-
+    neural_pred(data)
     aux = 0
 
     for i in np.arange(0, 25, 0.001):
         if aux == 1:
             break
         for j in np.arange(0, 25, 0.001):
-            x_test = [[i, j], [5, 5]]
-            result = model.predict(x_test)
+            result = 0
 
             if result[0] == 1:
                 print(result)
-                x = x_test[0][0]
-                y = x_test[0][1]
-                # print(x)
-                # print(y)
-                sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
-                values = (y, 1)
-                mycursor.execute(sql, values)
-                mydb.commit()
-                sql = "UPDATE DATA SET X = %s WHERE ID = %s"
-                values = (x, 1)
-                mycursor.execute(sql, values)
-                mydb.commit()
-                aux = 1
+                # x = x_test[0][0]
+                # y = x_test[0][1]
+                # sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
+                # values = (y, 1)
+                # mycursor.execute(sql, values)
+                # mydb.commit()
+                # sql = "UPDATE DATA SET X = %s WHERE ID = %s"
+                # values = (x, 1)
+                # mycursor.execute(sql, values)
+                # mydb.commit()
+                # aux = 1
                 break
     print("END")
 
+
 def neural_pred(data):
-    x_in = data[:,:2]
-    y_out = data[:,2]
+    x_in = data[:, :2]
+    y_out = data[:, 2]
 
     model = tf.keras.Sequential([
-        tf.keras.layers.Input(shape=(2,)),        # Capa de entrada con 2 características (x, y)
+        tf.keras.layers.Input(shape=(2,)),  # Capa de entrada con 2 características (x, y)
         tf.keras.layers.Dense(64, activation='relu'),  # Capa oculta con 64 neuronas y función de activación ReLU
         tf.keras.layers.Dense(1, activation='sigmoid')  # Capa de salida con 1 neurona y función de activación sigmoid
     ])
@@ -575,13 +572,16 @@ def neural_pred(data):
     model.fit(x_in, y_out, epochs=100)
 
     new_data = np.array([[56.26, 23.22],  # [x, y]
-                        [5.26, 23.22]])  # [x, y]
+                         [5.26, 23.22]])  # [x, y]
 
     predictions = model.predict(new_data)
 
     # Imprime las predicciones
     for i, pred in enumerate(predictions):
         print(f'Datos de entrada: {new_data[i]}, Predicción: {pred[0]} (TRUE si > 0.5, FALSE si <= 0.5)')
+
+    return predictions
+
 
 start()
 # time.sleep(60)
