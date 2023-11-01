@@ -16,7 +16,6 @@ from skimage.segmentation import mark_boundaries
 from skimage.util import img_as_float
 from skimage import io
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import LinearSVC
 import tensorflow as tf
 
 global continue_recording
@@ -505,7 +504,7 @@ def pull_coor():
     # y_out = []
     data = np.zeros((3))
     mydb = mysql.connector.connect(
-        host="localhost",
+        host="192.168.0.167",
         user="Greg",
         password="contpass01",
         database="AIRY"
@@ -531,18 +530,9 @@ def pull_coor():
     return data
 
 
-def linear_svc_model(x, y):
-    # scaler = StandardScaler()
-    # x_scaled = scaler.fit_transform(x)
-    new_model = LinearSVC(max_iter=900000000, C=9000000, verbose=1)
-    new_model.fit(x, y)
-    print("model ready")
-    return new_model
-
-
 def start():
-    x, y = pull_coor()
-    model = linear_svc_model(x, y)
+    data = pull_coor()
+
 
     aux = 0
 
@@ -584,8 +574,8 @@ def neural_pred(data):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model.fit(x_in, y_out, epochs=100)
 
-    ew_data = np.array([[7.0, 8.0],  # [x, y]
-                        [8.0, 9.0]])  # [x, y]
+    new_data = np.array([[56.26, 23.22],  # [x, y]
+                        [5.26, 23.22]])  # [x, y]
 
     predictions = model.predict(new_data)
 
