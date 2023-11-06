@@ -536,10 +536,10 @@ def start():
     aux = 0
     model = tf.keras.models.load_model('my_model.keras')
 
-    for i in np.arange(0, 25, 0.1):
+    for i in np.arange(10.20, 10.30, 0.01):
         if aux == 1:
             break
-        for j in np.arange(0, 25, 0.1):
+        for j in np.arange(0, 1, 0.01):
             result = neural_predictions(i, j, model)
             if result[0] > 0.98:
                 print(result[0] * 100)
