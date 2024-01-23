@@ -328,6 +328,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     YlastErr = Yerror
                     YlastTime = Ynow
 
+
                     YOutput = YOutput / 1000
                     Ydist = YOutput * 0.00004
                     print(str(Yerror) + " salida = " + str(YOutput) + " dista y = " + str(Ydist))
