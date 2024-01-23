@@ -210,11 +210,11 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     # of segments
                     segments = slic(image, n_segments=numSegments, sigma=5)
                     # show the output of SLIC
-                    fig = plt.figure("Superpixels -- %d segments" % (numSegments))
-                    ax = fig.add_subplot(1, 1, 1)
-                    ax.imshow(mark_boundaries(image, segments))
-                    plt.axis("off")
-                    plt.show()
+                    #fig = plt.figure("Superpixels -- %d segments" % (numSegments))
+                    #ax = fig.add_subplot(1, 1, 1)
+                    #ax.imshow(mark_boundaries(image, segments))
+                    #plt.axis("off")
+                    #plt.show()
 
                     # select mnax value
                     # mean segments
@@ -308,7 +308,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                         mydb.commit()
                     else:
                         sql = "UPDATE data SET X = %s WHERE ID = %s"
-                        values = (-Xdist, 1)
+                        values = (Xdist, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
 
@@ -341,7 +341,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                         mydb.commit()
                     else:
                         sql = "UPDATE data SET Y = %s WHERE ID = %s"
-                        values = (-Ydist, 1)
+                        values = (Ydist, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
 
@@ -583,6 +583,6 @@ def neural_predictions(i, j, model):
     return predictions
 
 
-start()
+# start()
 # time.sleep(60)
-# main()
+main()
