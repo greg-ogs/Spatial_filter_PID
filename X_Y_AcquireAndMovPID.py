@@ -294,8 +294,8 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     XlastTime = Xnow
                     
                     XOutput = XOutput / 1000
-                    Xdist =  XOutput * 0.00004
-                    print(str(Xerror) + " salida = " + str(XOutput) + " dista x = " + str(Xdist))
+                    Xdist = -XOutput * 0.00004
+                    print(str(Xdist))
                    
                     #Upgrade values mariadb
                     if Xerror < 35 and Xerror > -35:
@@ -327,8 +327,8 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     YlastTime = Ynow
                     
                     YOutput = YOutput / 1000
-                    Ydist =  YOutput * 0.00004
-                    print(str(Yerror) + " salida = " + str(YOutput) + " dista y = " + str(Ydist))
+                    Ydist = -YOutput * 0.00004
+                    print(str(Ydist))
                    
                     #Upgrade values mariadb
                     if Yerror < 45 and Yerror > -45:
