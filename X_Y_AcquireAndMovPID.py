@@ -172,6 +172,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
         #fig.canvas.mpl_connect('close_event', handle_close)
 
         # Retrieve and display images
+        time1 = time.time()
         while(continue_recording):
             try:
 
@@ -390,6 +391,8 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
         #  *** NOTES ***
         #  Ending acquisition appropriately helps ensure that devices clean up
         #  properly and do not need to be power-cycled to maintain integrity.
+        time2 = time.time()
+        print(time2 - time1)
         cam.EndAcquisition()
 
     except PySpin.SpinnakerException as ex:
