@@ -11,9 +11,9 @@ import mysql.connector
 def database():
     mydb = mysql.connector.connect(
         host="localhost",
-        user="Greg",
+        user="greg",
         password="contpass01",
-        database="AIRY"
+        database="airy"
     )
 
     mycursor = mydb.cursor()
@@ -25,5 +25,6 @@ def database():
     x = list_one[1]
     y = list_one[2]
     signal = list_one[3]
+    stop = list_one[4]
     m = [x, y, signal]
     return m

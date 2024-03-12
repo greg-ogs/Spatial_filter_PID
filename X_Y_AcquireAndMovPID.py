@@ -21,9 +21,9 @@ continue_recording = True
     
 mydb = mysql.connector.connect(
     host="localhost",
-    user="Greg",
+    user="greg",
     password="contpass01",
-    database="AIRY"
+    database="airy"
 )
 
 mycursor = mydb.cursor()
