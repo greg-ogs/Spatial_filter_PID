@@ -18,7 +18,7 @@ from skimage import io
 
 global continue_recording
 continue_recording = True
-    
+
 mydb = mysql.connector.connect(
     host="localhost",
     user="greg",
@@ -27,6 +27,7 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
+
 
 def handle_close(evt):
     """
@@ -38,7 +39,6 @@ def handle_close(evt):
 
     global continue_recording
     continue_recording = False
-    
 
 
 def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
@@ -57,7 +57,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
     global continue_recording
 
     sNodemap = cam.GetTLStreamNodeMap()
-    
+
     Xkp = 2.6001
     float(Xkp)
     Xki = 11.5880
@@ -66,7 +66,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
     float(Xkd)
     XSetpoint = 640
     float(XSetpoint)
-    
+
     Ykp = 7.0501
     float(Ykp)
     Yki = 6.3064
@@ -75,7 +75,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
     float(Ykd)
     YSetpoint = 512
     float(YSetpoint)
-    
+
     XlastTime = time.time()
     XlastTime = int(XlastTime)
     YlastTime = time.time()
@@ -92,8 +92,8 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
     Ystack = [0, 0]
     XS = 0
     YS = 0
-    #pid = PID((kp,ki,kd), setpoint)
-    #pid.output_limits(0,255)
+    # pid = PID((kp,ki,kd), setpoint)
+    # pid.output_limits(0,255)
 
     # Change bufferhandling mode to NewestOnly
     node_bufferhandling_mode = PySpin.CEnumerationPtr(sNodemap.GetNode('StreamBufferHandlingMode'))
@@ -165,15 +165,14 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
         print('Press enter to close the program..')
 
         # Figure(1) is default so you can omit this line. Figure(0) will create a new window every time program hits this line
-        #fig = plt.figure(1)
-        
+        # fig = plt.figure(1)
 
         # Close the GUI when close event happens
-        #fig.canvas.mpl_connect('close_event', handle_close)
+        # fig.canvas.mpl_connect('close_event', handle_close)
 
         # Retrieve and display images
         time1 = time.time()
-        while(continue_recording):
+        while (continue_recording):
             try:
 
                 #  Retrieve next received image
@@ -186,119 +185,121 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                 #  Once an image from the buffer is saved and/or no longer
                 #  needed, the image must be released in order to keep the
                 #  buffer from filling up.
-                #time.sleep(2)
+                # time.sleep(2)
                 image_result = cam.GetNextImage(100)
 
                 #  Ensure image completion
                 if image_result.IsIncomplete():
                     print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
 
-                else:                    
+                else:
 
                     # Getting the image data as a numpy array
                     image_data = image_result.GetNDArray()
                     image_data = np.uint8(image_data)
-                    
+
                     A = image_data
                     B = image_data
                     C = np.dstack((A, B))
                     image = np.dstack((C, B))
-                    
-                    #for numSegments in (100, 200, 300):
-                    numSegments = 600
+
+                    # for numSegments in (100, 200, 300):
+                    numSegments = 800
                     # apply SLIC and extract (approximately) the supplied number
                     # of segments
-                    segments = slic(image, n_segments = numSegments, sigma = 5)
+                    segments = slic(image, n_segments=numSegments, sigma=5)
                     # show the output of SLIC
-                    fig = plt.figure("Superpixels -- %d segments" % (numSegments))
-                    ax = fig.add_subplot(1, 1, 1)
-                    ax.imshow(mark_boundaries(image, segments))
-                    plt.axis("off")
-                    plt.show()
-                   
-                    #select mnax value
-                    #mean segments
-                    #lower/ more pre
+                    # fig = plt.figure("Superpixels -- %d segments" % (numSegments))
+                    # ax = fig.add_subplot(1, 1, 1)
+                    # ax.imshow(mark_boundaries(image, segments))
+                    # plt.axis("off")
+                    # plt.show()
+
+                    # select mnax value
+                    # mean segments
+                    # lower/ more pre
                     nlabels = np.amax(segments)
                     nlabels = nlabels + 1
                     nlabels = int(nlabels)
                     values = []
-                    for i in range(1,nlabels):
-                        coor = np.where(segments == i)#coordenada de cada segmento
-                        #co = [coor[0][0],coor[1][0]]# toma la primera coordenada de cada segmento
-                        #segmentVal = image[co[0]][co[1]][2]#usa la coordenada anterior para buscar el valor en la imagen
-                        arraysize = coor[0].shape# canntidad de coordenadas de el segmento actual
+                    for i in range(1, nlabels):
+                        coor = np.where(segments == i)  # coordenada de cada segmento
+                        # co = [coor[0][0],coor[1][0]]# toma la primera coordenada de cada segmento
+                        # segmentVal = image[co[0]][co[1]][2]#usa la coordenada anterior para buscar el valor en la imagen
+                        arraysize = coor[0].shape  # canntidad de coordenadas de el segmento actual
                         arrsiz = arraysize[0]
                         meansum = []
                         for j in range(arrsiz):
-                            #individualCoor = [coor[0][j],coor[1][j]]#coordenada individual de cda pixel del segemento
-                            coorVal = image[coor[0][j]][coor[1][j]][0] #valaor de cada pixel del segmento
-                            meansum.append(coorVal)#se agrega el valor a un vector
-                        segmentVal = np.mean(meansum)#media
-                        values.append(segmentVal) #agrega ese valor a una variable (la media de cada segmento)
-                    maxsegment = np.where(values == np.amax(values))#elige segmento con valor maximo
-                    maxS = maxsegment[0] + 1# compensacion del 0 en el indice del array
+                            # individualCoor = [coor[0][j],coor[1][j]]#coordenada individual de cda pixel del segemento
+                            coorVal = image[coor[0][j]][coor[1][j]][0]  # valaor de cada pixel del segmento
+                            meansum.append(coorVal)  # se agrega el valor a un vector
+                        segmentVal = np.mean(meansum)  # media
+                        values.append(segmentVal)  # agrega ese valor a una variable (la media de cada segmento)
+                    maxsegment = np.where(values == np.amax(values))  # elige segmento con valor maximo
+                    maxS = maxsegment[0] + 1  # compensacion del 0 en el indice del array
                     maxseg = maxS[0]
-                    #print(maxseg)
-                    maxVC = np.where(segments == maxseg) #selecciona todas las coordenadas del segmento con valor maximo
-                    #calcular la distancia desde el segmento hasta el centro
-                    arraysz = maxVC[0].shape #dimencion del conjunto de coordenadas del segmento
-                    arsz = int(arraysz[0]/2)    #la mitad de ese conjunto
-                    XselectCoor = maxVC[1][arsz] #coordenada intermedia en x
+                    # print(maxseg)
+                    maxVC = np.where(
+                        segments == maxseg)  # selecciona todas las coordenadas del segmento con valor maximo
+                    # calcular la distancia desde el segmento hasta el centro
+                    arraysz = maxVC[0].shape  # dimencion del conjunto de coordenadas del segmento
+                    arsz = int(arraysz[0] / 2)  # la mitad de ese conjunto
+                    XselectCoor = maxVC[1][arsz]  # coordenada intermedia en x
                     X = XselectCoor
-                    YselectCoor = maxVC[0][arsz] #coordenada intermedia en y
+                    YselectCoor = maxVC[0][arsz]  # coordenada intermedia en y
                     Y = YselectCoor
-                    
-                    #mid coor
-                    #2-3 s faster/ less pre
-# =============================================================================
-#                     nlabels = np.amax(segments)
-#                     nlabels = nlabels + 1
-#                     nlabels = int(nlabels)
-#                     values = []
-#                     for i in range(1,nlabels):
-#                         coor = np.where(segments == i)#coordenada de cada segmento
-#                         arraysize = coor[0].shape# canntidad de coordenadas de el segmento actual
-#                         arrsiz = arraysize[0]
-#                         arsz = int(arrsiz/2)
-#                         co = [coor[0][arsz],coor[1][arsz]]# toma la primera coordenada de cada segmento
-#                         segmentVal = image[co[0]][co[1]][0]#usa la coordenada anterior para buscar el valor en la imagen
-#                         values.append(segmentVal) #agrega ese valor a una variable 
-#                     maxsegment = np.where(values == np.amax(values))#elige segmento con valor maximo
-#                     maxS = maxsegment[0] + 1# compensacion del 0 en el indice del array
-#                     maxseg = maxS[0]
-#                     #print(maxseg)
-#                     maxVC = np.where(segments == maxseg) #selecciona todas las coordenadas del segmento con valor maximo
-#                     #calcular la distancia desde el segmento hasta el centro
-#                     arraysz = maxVC[0].shape #dimencion del conjunto de coordenadas del segmento
-#                     arsz = int(arraysz[0]/2)    #la mitad de ese conjunto
-#                     selectCoor = maxVC[1][arsz] #coordenada intermedia en x
-#                     X =  selectCoor
-#                     selectCoor = maxVC[0][arsz] #coordenada intermedia en x
-#                     Y = selectCoor
-# =============================================================================
-                    
-                    #PID x
+
+                    # mid coor
+                    # 2-3 s faster/ less pre
+                    # =============================================================================
+                    #                     nlabels = np.amax(segments)
+                    #                     nlabels = nlabels + 1
+                    #                     nlabels = int(nlabels)
+                    #                     values = []
+                    #                     for i in range(1,nlabels):
+                    #                         coor = np.where(segments == i)#coordenada de cada segmento
+                    #                         arraysize = coor[0].shape# canntidad de coordenadas de el segmento actual
+                    #                         arrsiz = arraysize[0]
+                    #                         arsz = int(arrsiz/2)
+                    #                         co = [coor[0][arsz],coor[1][arsz]]# toma la primera coordenada de cada segmento
+                    #                         segmentVal = image[co[0]][co[1]][0]#usa la coordenada anterior para buscar el valor en la imagen
+                    #                         values.append(segmentVal) #agrega ese valor a una variable
+                    #                     maxsegment = np.where(values == np.amax(values))#elige segmento con valor maximo
+                    #                     maxS = maxsegment[0] + 1# compensacion del 0 en el indice del array
+                    #                     maxseg = maxS[0]
+                    #                     #print(maxseg)
+                    #                     maxVC = np.where(segments == maxseg) #selecciona todas las coordenadas del segmento con valor maximo
+                    #                     #calcular la distancia desde el segmento hasta el centro
+                    #                     arraysz = maxVC[0].shape #dimencion del conjunto de coordenadas del segmento
+                    #                     arsz = int(arraysz[0]/2)    #la mitad de ese conjunto
+                    #                     selectCoor = maxVC[1][arsz] #coordenada intermedia en x
+                    #                     X =  selectCoor
+                    #                     selectCoor = maxVC[0][arsz] #coordenada intermedia en x
+                    #                     Y = selectCoor
+                    # =============================================================================
+
+                    # PID x
                     XInput = X
                     Xnow = time.time()
                     XtimeChange = (Xnow - XlastTime)
-                    Xerror = (XInput - XSetpoint)*(-1)
+                    Xerror = (XInput - XSetpoint) * (-1)
                     XerrStack = (Xerror * XtimeChange)
                     Xstack.append(XerrStack)
                     Xstack.pop(0)
-                    XerrSum = sum(Xstack)  
-                    #3.57745-4.37742
-                    #0.7999700000000001
+                    XerrSum = sum(Xstack)
+                    # 3.57745-4.37742
+                    # 0.7999700000000001
                     XdErr = (Xerror - XlastErr) / XtimeChange
                     XOutput = Xkp * Xerror + Xki * XerrSum + Xkd * XdErr
                     XlastErr = Xerror
                     XlastTime = Xnow
-                    
+
                     XOutput = XOutput / 1000
-                    Xdist = -XOutput * 0.00004
-                    print(str(Xdist))
-                   
-                    #Upgrade values mariadb
+                    Xdist = -XOutput * 0.0004
+                    Xdist = round(Xdist, 5)
+                    print('X increment: ' + str(Xdist))
+
+                    # Upgrade values mariadb
                     if Xerror < 35 and Xerror > -35:
                         XS = 1
                         sql = "UPDATE DATA SET X = %s WHERE ID = %s"
@@ -310,28 +311,29 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                         values = (Xdist, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
-                        
-                    #PID y
+
+                    # PID y
                     YInput = Y
                     Ynow = time.time()
                     YtimeChange = (Ynow - YlastTime)
-                    Yerror = (YInput - YSetpoint)*(-1)
+                    Yerror = (YInput - YSetpoint) * (-1)
                     YerrStack = (Yerror * YtimeChange)
                     Ystack.append(YerrStack)
                     Ystack.pop(0)
-                    YerrSum = sum(Ystack)  
-                    #3.57745-4.37742
-                    #0.7999700000000001
+                    YerrSum = sum(Ystack)
+                    # 3.57745-4.37742
+                    # 0.7999700000000001
                     YdErr = (Yerror - YlastErr) / YtimeChange
                     YOutput = Ykp * Yerror + Yki * YerrSum + Ykd * YdErr
                     YlastErr = Yerror
                     YlastTime = Ynow
-                    
+
                     YOutput = YOutput / 1000
-                    Ydist = -YOutput * 0.00004
-                    print(str(Ydist))
-                   
-                    #Upgrade values mariadb
+                    Ydist = -YOutput * 0.0004
+                    Ydist = round(Ydist, 5)
+                    print('Y increment: ' + str(Ydist))
+
+                    # Upgrade values mariadb
                     if Yerror < 45 and Yerror > -45:
                         YS = 1
                         sql = "UPDATE DATA SET Y = %s WHERE ID = %s"
@@ -343,32 +345,37 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                         values = (Ydist, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
-                                       
+
                     if XS == 1 and YS == 1:
-                        continue_recording=False
+                        continue_recording = False
                         sql = "UPDATE DATA SET X = %s, Y = %s WHERE ID = %s"
                         values = (0, 0, 1)
                         mycursor.execute(sql, values)
                         mydb.commit()
+                        fig = plt.figure("Superpixels -- %d segments" % numSegments)
+                        ax = fig.add_subplot(1, 1, 1)
+                        # ax.imshow(mark_boundaries(image, segments))
+                        plt.axis("off")
+                        plt.show()
 
                     # Draws an image on the current figure
-                    #plt.imshow(image_data, cmap='gray')
-#Data               #image_data is a image in array data
-                    #print('Ploting images')
+                    # plt.imshow(image_data, cmap='gray')
+                    # Data               #image_data is a image in array data
+                    # print('Ploting images')
                     # Interval in plt.pause(interval) determines how fast the images are displayed in a GUI
                     # Interval is in seconds.
-                    #plt.pause(0.001)
+                    # plt.pause(0.001)
                     # Clear current reference of a figure. This will improve display speed significantly
-                    #plt.clf()
-                    
+                    # plt.clf()
+
                     # If user presses enter, close the program
                     if keyboard.is_pressed('ENTER'):
-                    #    print('Program is closing...')
-                        
+                        #    print('Program is closing...')
+
                         # Close figure
-                    #    plt.close('all')             
-                    #    input('Done! Press Enter to exit...')
-                        continue_recording=False   
+                        #    plt.close('all')
+                        #    input('Done! Press Enter to exit...')
+                        continue_recording = False
                         sql = "UPDATE DATA SET X = %s, Y = %s WHERE ID = %s"
                         values = (0, 0, 1)
                         mycursor.execute(sql, values)
@@ -392,6 +399,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
         #  Ending acquisition appropriately helps ensure that devices clean up
         #  properly and do not need to be power-cycled to maintain integrity.
         time2 = time.time()
+        print("Time elapsed -----------------------------")
         print(time2 - time1)
         cam.EndAcquisition()
 
@@ -399,11 +407,81 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
         print('Error: %s' % ex)
         return False
 
-    return True;#retornar image_data
+    return True;  # retornar image_data
+
+
+def configure_exposure(cam):
+    """
+     This function configures a custom exposure time. Automatic exposure is turned
+     off in order to allow for the customization, and then the custom setting is
+     applied.
+
+     :param cam: Camera to configure exposure for.
+     :type cam: CameraPtr
+     :return: True if successful, False otherwise.
+     :rtype: bool
+    """
+
+    print('*** CONFIGURING EXPOSURE ***\n')
+
+    try:
+        result = True
+
+        # Turn off automatic exposure mode
+        #
+        # *** NOTES ***
+        # Automatic exposure prevents the manual configuration of exposure
+        # times and needs to be turned off for this example. Enumerations
+        # representing entry nodes have been added to QuickSpin. This allows
+        # for the much easier setting of enumeration nodes to new values.
+        #
+        # The naming convention of QuickSpin enums is the name of the
+        # enumeration node followed by an underscore and the symbolic of
+        # the entry node. Selecting "Off" on the "ExposureAuto" node is
+        # thus named "ExposureAuto_Off".
+        #
+        # *** LATER ***
+        # Exposure time can be set automatically or manually as needed. This
+        # example turns automatic exposure off to set it manually and back
+        # on to return the camera to its default state.
+
+        if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+            print('Unable to disable automatic exposure. Aborting...')
+            return False
+
+        cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+        print('Automatic exposure disabled...')
+
+        # Set exposure time manually; exposure time recorded in microseconds
+        #
+        # *** NOTES ***
+        # Notice that the node is checked for availability and writability
+        # prior to the setting of the node. In QuickSpin, availability and
+        # writability are ensured by checking the access mode.
+        #
+        # Further, it is ensured that the desired exposure time does not exceed
+        # the maximum. Exposure time is counted in microseconds - this can be
+        # found out either by retrieving the unit with the GetUnit() method or
+        # by checking SpinView.
+
+        if cam.ExposureTime.GetAccessMode() != PySpin.RW:
+            print('Unable to set exposure time. Aborting...')
+            return False
+
+        # Ensure desired exposure time does not exceed the maximum
+        exposure_time_to_set = 2500.0
+        exposure_time_to_set = min(cam.ExposureTime.GetMax(), exposure_time_to_set)
+        cam.ExposureTime.SetValue(exposure_time_to_set)
+        print('Shutter time set to %s us...\n' % exposure_time_to_set)
+
+    except PySpin.SpinnakerException as ex:
+        print('Error: %s' % ex)
+        result = False
+
+    return result
 
 
 def run_single_camera(cam):
-    
     """
     This function acts as the body of the example; please see NodeMapInfo example
     for more in-depth comments on setting up cameras.
@@ -420,14 +498,19 @@ def run_single_camera(cam):
 
         # Initialize camera
         cam.Init()
+        print('Before setting up')
+
+        result = configure_exposure(cam)
+
+        print('After setting up')
 
         # Retrieve GenICam nodemap
         nodemap = cam.GetNodeMap()
 
         # Acquire images
-        #result =bool , image_data
+        # result =bool , image_data
         result = acquire_and_display_images(cam, nodemap, nodemap_tldevice)
-        result&=result
+        result &= result
         # Deinitialize camera
         cam.DeInit()
 
@@ -439,7 +522,6 @@ def run_single_camera(cam):
 
 
 def main():
-    
     """
     Example entry point; notice the volume of data that the logging event handler
     prints out on debug despite the fact that very little really happens in this
@@ -467,25 +549,23 @@ def main():
 
     # Finish if there are no cameras
     if num_cameras == 0:
-
         # Clear camera list before releasing system
         cam_list.Clear()
-        image_data=[10,10]
+        image_data = [10, 10]
 
         # Release system instance
         system.ReleaseInstance()
 
         print('Not enough cameras!')
-        #input('Done! Press Enter to exit...')
+        # input('Done! Press Enter to exit...')
         return False, image_data
 
     # Run example on each camera
     for i, cam in enumerate(cam_list):
-
         print('Running example for camera %d...' % i)
-        #time.sleep(2)
+        # time.sleep(2)
         result = run_single_camera(cam)
-        result&=result
+        result &= result
         print('Camera %d example complete... \n' % i)
 
     # Release reference to camera
@@ -499,8 +579,9 @@ def main():
 
     # Release system instance
     system.ReleaseInstance()
-    
-    #input('Done! Press Enter to exit...')
-    #return only bool # return result
+
+    # input('Done! Press Enter to exit...')
+    # return only bool # return result
+
 
 main()
