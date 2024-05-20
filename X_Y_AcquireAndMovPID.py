@@ -204,16 +204,16 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     image = np.dstack((C, B))
 
                     # for numSegments in (100, 200, 300):
-                    numSegments = 800
+                    numSegments = 2000
                     # apply SLIC and extract (approximately) the supplied number
                     # of segments
                     segments = slic(image, n_segments=numSegments, sigma=5)
                     # show the output of SLIC
-                    # fig = plt.figure("Superpixels -- %d segments" % (numSegments))
-                    # ax = fig.add_subplot(1, 1, 1)
-                    # ax.imshow(mark_boundaries(image, segments))
-                    # plt.axis("off")
-                    # plt.show()
+                    fig = plt.figure("Superpixels -- %d segments" % (numSegments))
+                    ax = fig.add_subplot(1, 1, 1)
+                    ax.imshow(mark_boundaries(image, segments))
+                    plt.axis("off")
+                    plt.show()
 
                     # select mnax value
                     # mean segments
@@ -300,7 +300,7 @@ def acquire_and_display_images(cam, nodemap, nodemap_tldevice):
                     print('X increment: ' + str(Xdist))
 
                     # Upgrade values mariadb
-                    if Xerror < 35 and Xerror > -35:
+                    if Xerror < 45 and Xerror > -45:
                         XS = 1
                         sql = "UPDATE DATA SET X = %s WHERE ID = %s"
                         values = (0, 1)
